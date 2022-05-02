@@ -3,6 +3,7 @@
 Work in Progress 
 
 Input: Annotations in the following Format: XML - CVAT for Images (annotations.xml)
+
 Output: txt file with the appropriate name (frameXXXX.lines.txt)
 
 The converter.py node reads the annotation file and finds all items with the name images. Then it gets the points from the polylines to calculate the points.
