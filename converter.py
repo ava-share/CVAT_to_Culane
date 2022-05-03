@@ -17,6 +17,7 @@ items = mydoc.getElementsByTagName('image')
 i = 0
 #go through all images, and find polylines (aka childNodes), extract points and convert to floats
 while i < items.length - 1:
+    x1, y1, x2, y2, x3, y3 = 0, 0, 0, 0, 0, 0
     image_name = items[i].attributes['name'].value #get image name
     txt_file_name = image_name.replace('.jpg','.lines.txt') #get image name and convert to text file name
     #print(txt_file_name)
@@ -54,6 +55,7 @@ while i < items.length - 1:
         f.write('\n')
 
     if  items[i].childNodes.length == 5:
+        x1, y1, x2, y2, x3, y3 = 0, 0, 0, 0, 0, 0
         if items[i].childNodes.item(3).attributes['label'].value == 'line3':
             line3_points = items[i].childNodes.item(3).attributes['points'].value
             output_line3 = line3_points.replace(';',',')
