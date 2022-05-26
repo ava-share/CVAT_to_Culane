@@ -6,7 +6,42 @@
 # Limitations: The code currently only handles 2 Lines, it can handle less than 2 lines but not more (this would be easy to add)
 
 from xml.dom import minidom
-    
+
+def readPoints(items, i, pos):
+
+        if items[i].childNodes.item(pos).attributes['label'].value == 'line3':
+            line3_points = items[i].childNodes.item(pos).attributes['points'].value
+            output_line3 = line3_points.replace(';',',')
+            gListB= output_line3.split(',')
+
+        elif items[i].childNodes.item(pos).attributes['label'].value == 'line2':
+            line2_points = items[i].childNodes.item(pos).attributes['points'].value
+            output_line2 = line2_points.replace(';',',')
+            gListB= output_line2.split(',')
+
+        elif items[i].childNodes.item(pos).attributes['label'].value == 'line1':
+            line1_points = items[i].childNodes.item(pos).attributes['points'].value
+            output_line1 = line1_points.replace(';',',')
+            gListB= output_line1.split(',')
+
+        elif items[i].childNodes.item(pos).attributes['label'].value == 'line4':
+            line4_points = items[i].childNodes.item(pos).attributes['points'].value
+            output_line4 = line4_points.replace(';',',')
+            gListB= output_line4.split(',')
+
+        return gListB
+
+def parseResults(coordinates):
+
+    line_points2 = ' '.join(map(str,coordinates))
+    line_points2 = line_points2.replace(') (',',')
+    line_points2 = line_points2.replace(')','')
+    line_points2 = line_points2.replace('(','')
+    line_points2 = line_points2.replace(', ',' ')
+    line_points2 = line_points2.replace(',',' ')
+
+    return line_points2 
+
 def func(x,y,xp,yp):
     if x != xp:
         m=(yp-y)/(xp-x)
@@ -51,68 +86,62 @@ while i < items.length - 1:
    
     image_name = items[i].attributes['name'].value #get image name
     txt_file_name = image_name.replace('.jpg','.lines.txt') #get image name and convert to text file name
-    #print(txt_file_name)
 
-    gListA=[]
     gListB=[]
+    line_points=[]
     x=[]
     y=[]
     if items[i].childNodes.length >= 2: #if there are no lines there is still a length of 1 so if less than 2 then there are no lines and we create an empty file
 
-        if items[i].childNodes.item(1).attributes['label'].value == 'line3':
-            line3_points = items[i].childNodes.item(1).attributes['points'].value
-            output_line3 = line3_points.replace(';',',')
-            gListA= output_line3.split(',')
+        gListB = readPoints(items, i, 1) 
 
-        elif items[i].childNodes.item(1).attributes['label'].value == 'line2':
-            line2_points = items[i].childNodes.item(1).attributes['points'].value
-            output_line2 = line2_points.replace(';',',')
-            gListA= output_line2.split(',')
-        
-           
-        x,y = func2(gListA)
-        coordinates1=finding_piecewise_equations(x,y)
-        #print(coordinates1)
+        x,y = func2(gListB)
+        coordinates=finding_piecewise_equations(x,y)
+        line_points = parseResults(coordinates)
 
-        line_points1 = ' '.join(map(str,coordinates1))
-        line_points1 = line_points1.replace(') (',',')
-        line_points1 = line_points1.replace(')','')
-        line_points1 = line_points1.replace('(','')
-        line_points1 = line_points1.replace(', ',' ')
-        line_points1 = line_points1.replace(',',' ')
-        #print(line_points1)
-        with open(txt_file_name, 'w') as f: #write points to text file
-            f.write(line_points1)
-            f.write('\n')
+    with open(txt_file_name, 'w') as f: #write points to text file
+    	f.write(line_points)
+    	f.write('\n')
         
+    gListB=[]
     x=[]
     y=[]
-    if  items[i].childNodes.length == 5: #check if there is a second polyline
+    if  items[i].childNodes.length >= 5:
         
-        if items[i].childNodes.item(3).attributes['label'].value == 'line3':
-            line3_points = items[i].childNodes.item(3).attributes['points'].value
-            output_line3 = line3_points.replace(';',',')
-            gListB= output_line3.split(',')
+       gListB = readPoints(items, i,3) 
 
-        elif items[i].childNodes.item(3).attributes['label'].value == 'line2':
-            line2_points = items[i].childNodes.item(3).attributes['points'].value
-            output_line2 = line2_points.replace(';',',')
-            gListB= output_line2.split(',')
+       x,y = func2(gListB)
+       coordinates=finding_piecewise_equations(x,y)
+       line_points = parseResults(coordinates)
 
-    
-    x,y = func2(gListB)
-    coordinates2=finding_piecewise_equations(x,y)
-    #print(coordinates2)
+       with open(txt_file_name, 'a') as f: #note a instead of w to append and not overwrite the previous points
+ 	       f.write(line_points)
+     	       f.write('\n')
+	
+    gListB=[]
+    x=[]
+    y=[]
 
+    if  items[i].childNodes.length >= 7:
+        
+       gListB = readPoints(items, i,5) 
+  
+       x,y = func2(gListB)
+       coordinates=finding_piecewise_equations(x,y)
+       line_points = parseResults(coordinates)
+       with open(txt_file_name, 'a') as f: #note a instead of w to append and not overwrite the previous points
+       		f.write(line_points)
+ 	        f.write('\n')
 
-    line_points2 = ' '.join(map(str,coordinates2))
-    line_points2 = line_points2.replace(') (',',')
-    line_points2 = line_points2.replace(')','')
-    line_points2 = line_points2.replace('(','')
-    line_points2 = line_points2.replace(', ',' ')
-    line_points2 = line_points2.replace(',',' ')
-    #print(line_points2)
-    with open(txt_file_name, 'a') as f: #note a instead of w to append and not overwrite the previous points
-        f.write(line_points2)
+    if  items[i].childNodes.length >= 9:
+        
+       gListB = readPoints(items, i,7) 
+  
+       x,y = func2(gListB)
+       coordinates=finding_piecewise_equations(x,y)
+       line_points = parseResults(coordinates)
+       with open(txt_file_name, 'a') as f: #note a instead of w to append and not overwrite the previous points
+       		f.write(line_points)
+ 	        f.write('\n')
 
     i = i + 1 
